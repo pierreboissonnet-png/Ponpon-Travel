@@ -6,5 +6,6 @@ const v = webpush.generateVAPIDKeys();
 console.log(`AUTH_SECRET=${rnd()}
 CRON_SECRET=${rnd(24)}
 SETUP_KEY=${rnd(9)}
+BUG_API_KEY=${rnd(32)}
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=${v.publicKey}
 VAPID_PRIVATE_KEY=${v.privateKey}`);

@@ -22,6 +22,11 @@ export default async function SettingsPage() {
           : 'Pour être prévenu quand un organisateur te répond.'}</p>
         <PushSetup vapid={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''} />
       </section>
+      <section className="section">
+        <h2>Signaler un problème</h2>
+        <p className="muted small">Le bouton 🐞 en haut de chaque écran envoie aux organisateurs ta description, une capture de l’écran et les détails techniques.</p>
+        <div className="row"><Link className="btn" href="/signalements">{isAdmin(me.role) ? 'Tous les signalements' : 'Mes signalements'}</Link></div>
+      </section>
       {me.role === 'superadmin' && (
         <section className="section">
           <h2>Administration</h2>

@@ -2,6 +2,8 @@
 const nextConfig = {
   poweredByHeader: false,
   serverExternalPackages: ['web-push'],
+  // bug reports carry a screenshot (up to ~900 KB)
+  experimental: { serverActions: { bodySizeLimit: '3mb' } },
   async headers() {
     return [
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache' }, { key: 'Service-Worker-Allowed', value: '/' }] },

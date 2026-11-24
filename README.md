@@ -45,6 +45,8 @@ Le fichier `secrets-a-copier.txt` fourni à part contient les valeurs à coller 
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | depuis secrets-a-copier.txt |
 | `VAPID_PRIVATE_KEY` | depuis secrets-a-copier.txt |
 | `VAPID_SUBJECT` | `mailto:` suivi de ton adresse e-mail |
+| `BUG_API_KEY` | optionnel : accès de Claude aux signalements |
+| `ANTHROPIC_API_KEY` | optionnel, payant : diagnostic automatique des signalements |
 
 3. **Deploy**. Note l’adresse obtenue, par exemple `https://ecosse-2027.vercel.app`.
 
@@ -90,6 +92,28 @@ Les organisateurs (admins et super admin) doivent activer les notifications sur 
 - Les admins modifient une fiche avec **Modifier la fiche** : horaires, adresse, tarifs, n° de réservation, note privée, visibilité pour les invités et alertes d’échéance.
 - **Aujourd’hui › Voir le récapitulatif d’un autre jour** permet de prévisualiser une journée du voyage.
 - Une demande est **prise en charge** dès qu’un organisateur touche « Je m’en occupe » ou répond : les relances s’arrêtent.
+
+## Signalements de bugs
+
+Le bouton 🐞 en haut de chaque écran (et sur l’écran d’erreur) ouvre « Signaler un problème » : la personne décrit le souci et l’app joint une **capture de l’écran prise au moment du clic**, l’écran concerné, l’appareil, les erreurs techniques et les dernières actions. Rien de confidentiel n’est joint (ni tarifs, ni codes).
+
+- Chaque signalement reçoit un numéro (« Signalement n°12 ») et les organisateurs reçoivent une notification.
+- **Suivi** : **Réglages › Tous les signalements**. Les organisateurs changent le statut (Nouveau, En cours, Résolu, Sans suite), écrivent une note de suivi et échangent avec la personne, qui est notifiée. Une précision de sa part remet le signalement en « Nouveau ».
+- **Exports** : CSV (tableur) ou JSON avec les captures, à donner à Claude.
+- Limite anti-abus : 30 signalements en attente par personne et par 24 h.
+
+**Base de données** : sur un projet déjà installé, exécute une fois `supabase/bugs.sql` dans **SQL Editor** (il est déjà inclus dans `schema.sql` pour une nouvelle installation).
+
+**Suivi avec Claude (optionnel)** : ajoute dans Vercel la variable `BUG_API_KEY` (une longue chaîne aléatoire de 32 caractères minimum, générée par `npm run secrets`), puis redéploie. Claude peut alors lister les signalements, lire les captures et mettre à jour statut et note. L’accès se coupe depuis l’écran Signalements.
+
+```bash
+export APP_URL=https://travelecosse2027.vercel.app BUG_API_KEY=...
+node outils/bugs.mjs            # à traiter
+node outils/bugs.mjs 12         # détail + capture bug-12.jpg
+node outils/bugs.mjs 12 done "Corrigé dans la version 1.1.1"
+```
+
+**Diagnostic automatique (optionnel, payant)** : avec la variable `ANTHROPIC_API_KEY` (clé de l’API Anthropic, facturée à l’usage, environ un centime par signalement), chaque signalement reçoit un premier diagnostic de Claude (résumé, cause probable, gravité, piste de correction), visible des organisateurs. Sans cette clé, tout le reste fonctionne.
 
 ## Développement local
 
