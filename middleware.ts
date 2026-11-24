@@ -1,13 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { SESSION_COOKIE, readSession } from './lib/session';
 
-const PUBLIC = ['/login', '/setup', '/api/cron', '/manifest.webmanifest', '/sw.js', '/icon', '/apple-touch-icon.png', '/favicon.ico'];
+// Lightweight guard: sends visitors without a session cookie to /login.
+// The cookie's signature is checked on the server by every page and API route (lib/auth.ts).
+const SESSION_COOKIE = 'ev_session';
+const PUBLIC = ['/login', '/setup', '/api/cron', '/manifest.webmanifest', '/sw.js', '/favicon.ico'];
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (PUBLIC.some(p => pathname === p || pathname.startsWith(p + '/') || pathname.startsWith(p + '-'))) return NextResponse.next();
-  const ok = await readSession(req.cookies.get(SESSION_COOKIE)?.value);
-  if (ok) return NextResponse.next();
+  if (PUBLIC.some(p => pathname === p || pathname.startsWith(p + '/'))) return NextResponse.next();
+  if (req.cookies.get(SESSION_COOKIE)?.value) return NextResponse.next();
   if (pathname.startsWith('/api/')) return NextResponse.json({ error: 'non connecté' }, { status: 401 });
   const url = req.nextUrl.clone();
   url.pathname = '/login';
